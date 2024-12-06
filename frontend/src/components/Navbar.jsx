@@ -36,7 +36,7 @@ export default function Navbar({ content, onSearch }) {
           {/* Поле поиска по центру */}
           <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center'}}>
             <TextField
-              label="Поиск товаров"
+              label="Поиск метода"
               variant="outlined"
               size="small"
               onChange={(e) => onSearch(e.target.value)} // Отправляем введённый текст в родительский компонент
