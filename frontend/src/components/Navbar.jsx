@@ -27,27 +27,43 @@ export default function Navbar({ content, onSearch }) {
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1}}>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          {/* Заголовок слева */}
+          <Typography variant="h6" noWrap component="div">
             Нечеткая логика
           </Typography>
 
-          {/* Поле поиска */}
-          <TextField
-            label="Поиск товаров"
-            variant="outlined"
-            size="small"
-            onChange={(e) => onSearch(e.target.value)} // Отправляем введённый текст в родительский компонент
-          />
+          {/* Поле поиска по центру */}
+          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center'}}>
+            <TextField
+              label="Поиск товаров"
+              variant="outlined"
+              size="small"
+              onChange={(e) => onSearch(e.target.value)} // Отправляем введённый текст в родительский компонент
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderWidth: 2, // Увеличиваем толщину ободка
+                  },
+                },
+              }}
+              
+            />
+          </Box>
 
-          {/* Иконка профиля */}
-          <IconButton
-            color="inherit"
-            component={Link}
-            to="/auth" // Переход на страницу регистрации
-          >
-            <AccountCircle />
-          </IconButton>
+          {/* Иконка профиля и текст рядом с ней */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="body1" sx={{ marginRight: 1 }}>
+              Username {/* Простой текст "Username" */}
+            </Typography>
+            <IconButton
+              color="inherit"
+              component={Link}
+              to="/auth" // Переход на страницу регистрации
+            >
+              <AccountCircle />
+            </IconButton>
+          </Box>
         </Toolbar>
       </AppBar>
 
@@ -62,9 +78,8 @@ export default function Navbar({ content, onSearch }) {
       >
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
-
-        {/* Главная страница */}
-        <ListItem key={1} disablePadding>
+          {/* Главная страница */}
+          <ListItem key={1} disablePadding>
             <ListItemButton component={Link} to="/" selected={"/" === location.pathname}>
               <ListItemIcon>
                 <HomeIcon />
@@ -73,8 +88,7 @@ export default function Navbar({ content, onSearch }) {
             </ListItemButton>
           </ListItem>
 
-
-          {/* Главная страница */}
+          {/* Графы */}
           <ListItem key={1} disablePadding>
             <ListItemButton component={Link} to="/graphs" selected={"/graphs" === location.pathname}>
               <ListItemIcon>
@@ -84,7 +98,7 @@ export default function Navbar({ content, onSearch }) {
             </ListItemButton>
           </ListItem>
 
-          {/* Графические функции */}
+          {/* Композиция */}
           <ListItem key={2} disablePadding>
             <ListItemButton component={Link} to="/compozition" selected={"/compozition" === location.pathname}>
               <ListItemIcon>
@@ -94,7 +108,7 @@ export default function Navbar({ content, onSearch }) {
             </ListItemButton>
           </ListItem>
 
-
+          {/* Графические функции */}
           <ListItem key={2} disablePadding>
             <ListItemButton component={Link} to="/member" selected={"/member" === location.pathname}>
               <ListItemIcon>
