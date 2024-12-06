@@ -27,7 +27,7 @@ export default function Navbar({ content, onSearch }) {
       <CssBaseline />
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1}}>
             Нечеткая логика
           </Typography>
 
@@ -61,8 +61,9 @@ export default function Navbar({ content, onSearch }) {
       >
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
-          {/* Главная страница */}
-          <ListItem key={1} disablePadding>
+
+        {/* Главная страница */}
+        <ListItem key={1} disablePadding>
             <ListItemButton component={Link} to="/" selected={"/" === location.pathname}>
               <ListItemIcon>
                 <HomeIcon />
@@ -71,9 +72,30 @@ export default function Navbar({ content, onSearch }) {
             </ListItemButton>
           </ListItem>
 
+
+          {/* Главная страница */}
+          <ListItem key={1} disablePadding>
+            <ListItemButton component={Link} to="/graphs" selected={"/graphs" === location.pathname}>
+              <ListItemIcon>
+                <HomeIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Графы"} />
+            </ListItemButton>
+          </ListItem>
+
           {/* Графические функции */}
           <ListItem key={2} disablePadding>
-            <ListItemButton component={Link} to="/home2" selected={"/home2" === location.pathname}>
+            <ListItemButton component={Link} to="/compozition" selected={"/compozition" === location.pathname}>
+              <ListItemIcon>
+                <LineAxisIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Композиция"} />
+            </ListItemButton>
+          </ListItem>
+
+
+          <ListItem key={2} disablePadding>
+            <ListItemButton component={Link} to="/member" selected={"/member" === location.pathname}>
               <ListItemIcon>
                 <LineAxisIcon />
               </ListItemIcon>
