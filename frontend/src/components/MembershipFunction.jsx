@@ -266,8 +266,8 @@ const MembershipFunction = () => {
               plugins: {
                 annotation: {
                   annotations: [
-                    // Отображение вертикальной линии для B
-                    showBLine && {
+                    // Отображение вертикальной линии для B и C только для трапецеидальной функции
+                    functionType === "trapezoidal" && showBLine && {
                       type: "line",
                       mode: "vertical",
                       scaleID: "x",
@@ -276,8 +276,7 @@ const MembershipFunction = () => {
                       borderWidth: 2,
                       borderDash: [5, 5], // Пунктирная линия
                     },
-                    // Отображение вертикальной линии для C
-                    showCLine && {
+                    functionType === "trapezoidal" && showCLine && {
                       type: "line",
                       mode: "vertical",
                       scaleID: "x",
@@ -286,7 +285,7 @@ const MembershipFunction = () => {
                       borderWidth: 2,
                       borderDash: [5, 5], // Пунктирная линия
                     },
-                  ].filter(Boolean),
+                  ].filter(Boolean), // Убираем пустые значения
                 },
               },
             }}

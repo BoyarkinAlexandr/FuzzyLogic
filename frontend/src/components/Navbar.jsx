@@ -5,7 +5,7 @@ import AppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
+import AppsIcon from '@mui/icons-material/Apps';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -16,6 +16,7 @@ import IconButton from '@mui/material/IconButton';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { Link, useLocation } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
+import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
 
 const drawerWidth = 240;
 
@@ -77,7 +78,7 @@ export default function Navbar({ content, onSearch }) {
           <ListItem key={1} disablePadding>
             <ListItemButton component={Link} to="/graphs" selected={"/graphs" === location.pathname}>
               <ListItemIcon>
-                <HomeIcon />
+                <AirlineStopsIcon />
               </ListItemIcon>
               <ListItemText primary={"Графы"} />
             </ListItemButton>
@@ -87,7 +88,7 @@ export default function Navbar({ content, onSearch }) {
           <ListItem key={2} disablePadding>
             <ListItemButton component={Link} to="/compozition" selected={"/compozition" === location.pathname}>
               <ListItemIcon>
-                <LineAxisIcon />
+                <AppsIcon />
               </ListItemIcon>
               <ListItemText primary={"Композиция"} />
             </ListItemButton>
