@@ -1,5 +1,24 @@
 import React, { useState } from 'react';
-import { TextField, Button, Grid, Typography, Box, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { 
+  TextField, 
+  Button, 
+  Grid, 
+  Typography, 
+  Box, 
+  CircularProgress, 
+  Dialog, 
+  DialogActions, 
+  DialogContent, 
+  DialogTitle, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  Paper 
+} from '@mui/material';
+import { PlayCircleOutline } from '@mui/icons-material';
 import axios from 'axios';
 
 const Graphs = () => {
@@ -7,8 +26,9 @@ const Graphs = () => {
   const [transitions, setTransitions] = useState({});
   const [loading, setLoading] = useState(false);
   const [graphImage, setGraphImage] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);  // Стейт для открытия диалога с описанием
-  const [openVideoDialog, setOpenVideoDialog] = useState(false);  // Стейт для открытия диалога с видео
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openTheoryDialog, setOpenTheoryDialog] = useState(false); // Теория диалог
+  const [openVideoDialog, setOpenVideoDialog] = useState(false);
 
   const handleTransitionChange = (fromState, toState, value) => {
     setTransitions(prev => ({
@@ -18,48 +38,44 @@ const Graphs = () => {
   };
 
   const handleSubmitTable = async () => {
+    if (Object.values(transitions).every(value => value === '')) {
+      alert('Пожалуйста, заполните хотя бы один переход.');
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/api/generate_transition_graph/', {
-        transitions: transitions,
-      });
+      const response = await axios.post(
+        'http://localhost:8000/graphs/generate_transition_graph/',
+        { transitions: transitions },
+        { responseType: 'blob' }
+      );
 
-      // Сохраняем полученное изображение графа
       const imageUrl = URL.createObjectURL(response.data);
       setGraphImage(imageUrl);
     } catch (error) {
       console.error('Ошибка при отправке данных:', error);
+      alert('Не удалось сгенерировать граф. Проверьте введенные данные и попробуйте снова.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-
-  const handleOpenVideoDialog = () => {
-    setOpenVideoDialog(true);
-  };
-
-  const handleCloseVideoDialog = () => {
-    setOpenVideoDialog(false);
-  };
-
   return (
     <div>
       <Grid container justifyContent="space-between">
-        {/* Кнопка открытия описания */}
-        <Button variant="outlined" color="primary" onClick={handleOpenDialog}>
+        <Button variant="outlined" color="primary" onClick={() => setOpenDialog(true)}>
           Описание
         </Button>
-
-        {/* Кнопка открытия видео */}
-        <Button variant="outlined" color="primary" onClick={handleOpenVideoDialog}>
+        <Button variant="outlined" color="primary" onClick={() => setOpenTheoryDialog(true)}>
+          Теория
+        </Button>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => setOpenVideoDialog(true)}
+          startIcon={<PlayCircleOutline />}
+        >
           Видео
         </Button>
       </Grid>
@@ -67,36 +83,36 @@ const Graphs = () => {
       <Typography variant="h6" sx={{ marginTop: 2 }}>Введите переходы состояний:</Typography>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Box sx={{ padding: 2, border: '1px solid #ccc', borderRadius: 2 }}>
-            <Typography variant="subtitle1" gutterBottom>Таблица переходов:</Typography>
-            <table border="1" style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th></th>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell></TableCell>
                   {states.map((state) => (
-                    <th key={state}>{state}</th>
+                    <TableCell key={state} align="center">{state}</TableCell>
                   ))}
-                </tr>
-              </thead>
-              <tbody>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 {states.map((fromState) => (
-                  <tr key={fromState}>
-                    <td>{fromState}</td>
+                  <TableRow key={fromState}>
+                    <TableCell align="center">{fromState}</TableCell>
                     {states.map((toState) => (
-                      <td key={toState}>
+                      <TableCell key={toState} align="center">
                         <TextField
                           fullWidth
                           variant="outlined"
+                          size="small"
                           value={transitions[`${fromState}-${toState}`] || ''}
                           onChange={(e) => handleTransitionChange(fromState, toState, e.target.value)}
                         />
-                      </td>
+                      </TableCell>
                     ))}
-                  </tr>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </Box>
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Grid>
       </Grid>
 
@@ -115,21 +131,10 @@ const Graphs = () => {
         <Box sx={{ marginTop: 3 }}>
           <Typography variant="h6">Граф переходов:</Typography>
           <img src={graphImage} alt="Graph of transitions" style={{ maxWidth: '100%' }} />
-          
-          {/* Ссылка на видео */}
-          <Box sx={{ marginTop: 1 }}>
-            <Typography variant="body1">
-              Вы можете посмотреть видео о создании графов переходов по следующей ссылке:
-            </Typography>
-            <a href="https://www.youtube.com/watch?v=kJDx5R1TxIM" target="_blank" rel="noopener noreferrer">
-              Перейти к видео
-            </a>
-          </Box>
         </Box>
       )}
 
-      {/* Диалоговое окно с описанием */}
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Описание метода</DialogTitle>
         <DialogContent>
           <Typography variant="body1" paragraph>
@@ -141,27 +146,32 @@ const Graphs = () => {
           <Typography variant="body1" paragraph>
             2. После заполнения таблицы нажмите кнопку "Составить граф переходов". Приложение автоматически сгенерирует граф переходов и отобразит его на экране.
           </Typography>
-          <Typography variant="body1" paragraph>
-            3. Граф отображает состояния и переходы между ними, что помогает визуализировать алгоритм или процесс.
-          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
+          <Button onClick={() => setOpenDialog(false)} color="primary">
             Закрыть
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Диалоговое окно с видео из ВКонтакте */}
-      <Dialog open={openVideoDialog} onClose={handleCloseVideoDialog} maxWidth="md" fullWidth>
-        <DialogTitle>Посмотреть видео</DialogTitle>
+      <Dialog open={openTheoryDialog} onClose={() => setOpenTheoryDialog(false)} maxWidth="md" fullWidth>
+        <DialogTitle>Теория составления графов переходов</DialogTitle>
         <DialogContent>
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <iframe src="https://vk.com/video_ext.php?oid=-219252372&id=456240192&hd=2&autoplay=1" width="853" height="480" allow="autoplay; encrypted-media; fullscreen; picture-in-picture; screen-wake-lock;" frameborder="0" allowfullscreen></iframe>
-          </Box>
+          <Typography variant="body1" paragraph>
+            Граф переходов, или граф состояний, математически представляется в виде ориентированного графа G = (V, E), где:
+          </Typography>
+          <Typography variant="body1" paragraph>
+            1. V — конечное множество вершин (состояний).
+          </Typography>
+          <Typography variant="body1" paragraph>
+            2. E — множество ориентированных рёбер (переходов).
+          </Typography>
+          <Typography variant="body1" paragraph>
+            Каждый переход между состояниями описывается в виде ребра (u, v), где u, v — вершины графа. Метки на рёбрах обозначают условия переходов.
+          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseVideoDialog} color="primary">
+          <Button onClick={() => setOpenTheoryDialog(false)} color="primary">
             Закрыть
           </Button>
         </DialogActions>
