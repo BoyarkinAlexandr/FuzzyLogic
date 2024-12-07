@@ -108,7 +108,7 @@ export default function Navbar({ content, onSearch }) {
               <ListItemIcon>
                 <LineAxisIcon />
               </ListItemIcon>
-              <ListItemText primary={"Графические функции"} />
+              <ListItemText primary={"Функции принадлежности"} />
             </ListItemButton>
           </ListItem>
         </Box>

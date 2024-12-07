@@ -16,6 +16,7 @@ import {
   Checkbox,
   FormControlLabel,
   Typography,
+  Box
 } from "@mui/material";
 import {
   Chart as ChartJS,
@@ -110,6 +111,19 @@ const MembershipFunction = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showBLine, setShowBLine] = useState(true);
   const [showCLine, setShowCLine] = useState(true);
+
+
+  const [openVideoDialog, setOpenVideoDialog] = useState(false);  // Стейт для открытия диалога с видео
+
+
+  const handleOpenVideoDialog = () => {
+    setOpenVideoDialog(true);
+  };
+
+  const handleCloseVideoDialog = () => {
+    setOpenVideoDialog(false);
+  };
+
 
   const handleFunctionTypeChange = (e) => {
     const selectedFunction = e.target.value;
@@ -234,6 +248,36 @@ const MembershipFunction = () => {
         Объяснение функции
       </Button>
 
+      <Button
+        variant="contained"
+        sx={{
+          marginTop: "20px",
+          marginLeft: "10px",
+          backgroundColor: "#e53935", // Задайте ваш цвет
+        }}
+        onClick={handleOpenVideoDialog}
+        style={{ marginTop: "20px", marginLeft: "10px" }}
+        disabled={isLoading}
+      >
+         Видео
+      </Button>
+      
+
+      {/* Диалоговое окно с видео из ВКонтакте */}
+      <Dialog open={openVideoDialog} onClose={handleCloseVideoDialog} maxWidth="md" fullWidth>
+        <DialogTitle>Посмотреть видео</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <iframe width="720" height="405" src="https://rutube.ru/play/embed/471b8f1a6283227c0ae361837bb0b32b/" frameBorder="0" allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseVideoDialog} color="primary">
+            Закрыть
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
         <DialogTitle>Объяснение {functionType}-функции</DialogTitle>
         <DialogContent>
@@ -245,6 +289,9 @@ const MembershipFunction = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      
+
 
       {/* Блок с формулами */}
       <Grid container spacing={2} style={{ marginTop: "20px" }}>
