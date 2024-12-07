@@ -117,6 +117,8 @@ const Compozition = ({ onResult = () => {} }) => {
 
   return (
     <div>
+      <Typography variant="h4" align="center" sx={{ marginBottom: 3 }}>Вычисление композиции</Typography> {/* Заголовок "Вычисление композиции" */}
+      
       <Typography variant="h6">Введите размеры матриц:</Typography>
       <Grid container spacing={3} direction="column">
         {/* Контейнер для матрицы A */}

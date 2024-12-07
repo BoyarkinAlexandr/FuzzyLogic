@@ -15,6 +15,7 @@ import {
   CircularProgress,
   Checkbox,
   FormControlLabel,
+  Typography,
 } from "@mui/material";
 import {
   Chart as ChartJS,
@@ -27,7 +28,10 @@ import {
   Legend,
 } from 'chart.js';
 
-// Регистрация компонентов для графика
+// Импортируем react-katex для рендеринга формул
+import { BlockMath, InlineMath } from 'react-katex';  // Заменили MathJax на react-katex
+import 'katex/dist/katex.min.css';  // Подключаем стили для KaTeX
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -55,32 +59,68 @@ const MembershipFunction = () => {
     trapezoidal: "Трапецеидальная функция принадлежности задается четырьмя параметрами: a, b, c и d. Она имеет плоскую вершину между b и c.",
   };
 
+  const formulas = {
+    S: `
+      y(x) = 
+      \\left\\{
+      \\begin{array}{ll}
+        0, & x \\leq a \\\\
+        2 \\left( \\frac{x - a}{b - a} \\right)^2, & a < x \\leq \\frac{a + b}{2} \\\\
+        1 - 2 \\left( \\frac{b - x}{b - a} \\right)^2, & \\frac{a + b}{2} < x \\leq b \\\\
+        1, & x > b
+      \\end{array}
+      \\right.
+    `,
+    Z: `
+      y(x) = 
+      \\left\\{
+      \\begin{array}{ll}
+        1 - 2 \\left( \\frac{x - a}{b - a} \\right)^2, & a < x \\leq \\frac{a + b}{2} \\\\
+        2 \\left( \\frac{b - x}{b - a} \\right)^2, & \\frac{a + b}{2} < x \\leq b
+      \\end{array}
+      \\right.
+    `,
+    triangle: `
+      y(x) = 
+      \\left\\{
+      \\begin{array}{ll}
+        \\frac{x - a}{b - a}, & a < x \\leq b \\\\
+        \\frac{c - x}{c - b}, & b < x \\leq c
+      \\end{array}
+      \\right.
+    `,
+    trapezoidal: `
+      y(x) = 
+      \\left\\{
+      \\begin{array}{ll}
+        \\frac{x - a}{b - a}, & a < x \\leq b \\\\
+        1, & b < x \\leq c \\\\
+        \\frac{d - x}{d - c}, & c < x \\leq d
+      \\end{array}
+      \\right.
+    `,
+  };
+
   const [functionType, setFunctionType] = useState("S");
-  const [params, setParams] = useState({ a: 1, b: 5 }); // Начальные параметры
+  const [params, setParams] = useState({ a: 1, b: 5 });
   const [minX, setMinX] = useState(1);
   const [maxX, setMaxX] = useState(10);
   const [graphData, setGraphData] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false); // Управление диалогом
-  const [isLoading, setIsLoading] = useState(false); // Управление состоянием загрузки
-
-  // Состояния для отображения линий B и C
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showBLine, setShowBLine] = useState(true);
   const [showCLine, setShowCLine] = useState(true);
 
-  // Обновляем параметры при смене типа функции
   const handleFunctionTypeChange = (e) => {
     const selectedFunction = e.target.value;
     setFunctionType(selectedFunction);
-
-    // Сбрасываем параметры в зависимости от выбранной функции
     const newParams = {};
     parameterConfig[selectedFunction].forEach((param) => {
-      newParams[param] = 0; // Устанавливаем начальные значения параметров
+      newParams[param] = 0;
     });
     setParams(newParams);
   };
 
-  // Обновление конкретного параметра
   const handleChangeParams = (e) => {
     const { name, value } = e.target;
     const numericValue = parseFloat(value);
@@ -89,7 +129,6 @@ const MembershipFunction = () => {
     }
   };
 
-  // Обновление минимального значения X
   const handleMinXChange = (e) => {
     const value = parseFloat(e.target.value);
     if (!isNaN(value) && value >= 0) {
@@ -97,7 +136,6 @@ const MembershipFunction = () => {
     }
   };
 
-  // Обновление максимального значения X
   const handleMaxXChange = (e) => {
     const value = parseFloat(e.target.value);
     if (!isNaN(value) && value >= 0) {
@@ -105,7 +143,6 @@ const MembershipFunction = () => {
     }
   };
 
-  // Запрос данных графика
   const fetchGraphData = async () => {
     setIsLoading(true);
     try {
@@ -128,7 +165,6 @@ const MembershipFunction = () => {
     <div>
       <h1>Функции принадлежности</h1>
       <Grid container spacing={2}>
-        {/* Выбор типа функции */}
         <Grid item xs={12}>
           <TextField
             select
@@ -144,7 +180,6 @@ const MembershipFunction = () => {
           </TextField>
         </Grid>
 
-        {/* Поля ввода для параметров функции */}
         {parameterConfig[functionType].map((param) => (
           <Grid item xs={6} key={param}>
             <TextField
@@ -158,7 +193,6 @@ const MembershipFunction = () => {
           </Grid>
         ))}
 
-        {/* Поля ввода для диапазона X */}
         <Grid item xs={6}>
           <TextField
             label="Минимальное значение X"
@@ -179,18 +213,18 @@ const MembershipFunction = () => {
         </Grid>
       </Grid>
 
-      {/* Кнопка для построения графика */}
       <Button
         variant="contained"
         color="primary"
         onClick={fetchGraphData}
         style={{ marginTop: "20px", marginRight: "10px" }}
-        disabled={isLoading} // Отключение кнопки во время загрузки
+        disabled={isLoading}
       >
         Построить график
       </Button>
 
-      {/* Кнопка для объяснения функции */}
+      
+
       <Button
         variant="outlined"
         color="secondary"
@@ -200,7 +234,6 @@ const MembershipFunction = () => {
         Объяснение функции
       </Button>
 
-      {/* Диалоговое окно с описанием */}
       <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
         <DialogTitle>Объяснение {functionType}-функции</DialogTitle>
         <DialogContent>
@@ -213,17 +246,26 @@ const MembershipFunction = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Индикатор загрузки */}
+      {/* Блок с формулами */}
+      <Grid container spacing={2} style={{ marginTop: "20px" }}>
+        <Grid item xs={12}>
+          <Typography variant="h6" gutterBottom>
+            Формула для {functionType === "S" ? "S-функции" : functionType === "Z" ? "Z-функции" : functionType === "triangle" ? "Треугольной функции" : "Трапецеидальной функции"}:
+          </Typography>
+          <BlockMath>
+            {formulas[functionType]}
+          </BlockMath>
+        </Grid>
+      </Grid>
+
       {isLoading && (
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <CircularProgress />
         </div>
       )}
 
-      {/* Отображение графика */}
       {graphData && graphData.x.length > 0 && graphData.y.length > 0 && (
         <div>
-          {/* Чекбоксы для отображения линий B и C */}
           {functionType === "trapezoidal" && (
             <div style={{ marginTop: "20px" }}>
               <FormControlLabel
@@ -266,7 +308,6 @@ const MembershipFunction = () => {
               plugins: {
                 annotation: {
                   annotations: [
-                    // Отображение вертикальной линии для B и C только для трапецеидальной функции
                     functionType === "trapezoidal" && showBLine && {
                       type: "line",
                       mode: "vertical",
@@ -274,7 +315,7 @@ const MembershipFunction = () => {
                       value: params.b - minX,
                       borderColor: "rgba(255, 99, 132, 1)",
                       borderWidth: 2,
-                      borderDash: [5, 5], // Пунктирная линия
+                      borderDash: [5, 5],
                     },
                     functionType === "trapezoidal" && showCLine && {
                       type: "line",
@@ -283,9 +324,9 @@ const MembershipFunction = () => {
                       value: params.c - minX,
                       borderColor: "rgba(54, 162, 235, 1)",
                       borderWidth: 2,
-                      borderDash: [5, 5], // Пунктирная линия
+                      borderDash: [5, 5],
                     },
-                  ].filter(Boolean), // Убираем пустые значения
+                  ].filter(Boolean),
                 },
               },
             }}
