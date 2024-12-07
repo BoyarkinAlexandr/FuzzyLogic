@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Grid, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { TextField, Button, Grid, Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import axios from 'axios';
 
 const Compozition = ({ onResult = () => {} }) => {
@@ -149,6 +149,9 @@ const Compozition = ({ onResult = () => {} }) => {
                       value={col}
                       onChange={(e) => handleMatrixChange(matrixA, rowIndex, colIndex, e.target.value, 0)}
                       fullWidth
+                      inputProps={{
+                        step: 0.1, // Шаг изменения значения
+                      }}
                     />
                   </Grid>
                 ))}
@@ -187,6 +190,9 @@ const Compozition = ({ onResult = () => {} }) => {
                       value={col}
                       onChange={(e) => handleMatrixChange(matrixB, rowIndex, colIndex, e.target.value, 1)}
                       fullWidth
+                      inputProps={{
+                        step: 0.1, // Шаг изменения значения
+                      }}
                     />
                   </Grid>
                 ))}

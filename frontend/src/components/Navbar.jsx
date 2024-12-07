@@ -28,7 +28,6 @@ export default function Navbar({ content, onSearch }) {
       <CssBaseline />
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          {/* Заголовок слева */}
           <Typography variant="h6" noWrap component="div">
             Нечеткая логика
           </Typography>
@@ -47,14 +46,13 @@ export default function Navbar({ content, onSearch }) {
                   },
                 },
               }}
-              
             />
           </Box>
 
           {/* Иконка профиля и текст рядом с ней */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Typography variant="body1" sx={{ marginRight: 1 }}>
-              Username {/* Простой текст "Username" */}
+              Username
             </Typography>
             <IconButton
               color="inherit"
@@ -78,7 +76,6 @@ export default function Navbar({ content, onSearch }) {
       >
         <Toolbar />
         <Box sx={{ overflow: 'auto' }}>
-          {/* Главная страница */}
           <ListItem key={1} disablePadding>
             <ListItemButton component={Link} to="/" selected={"/" === location.pathname}>
               <ListItemIcon>
@@ -88,7 +85,6 @@ export default function Navbar({ content, onSearch }) {
             </ListItemButton>
           </ListItem>
 
-          {/* Графы */}
           <ListItem key={1} disablePadding>
             <ListItemButton component={Link} to="/graphs" selected={"/graphs" === location.pathname}>
               <ListItemIcon>
@@ -98,7 +94,6 @@ export default function Navbar({ content, onSearch }) {
             </ListItemButton>
           </ListItem>
 
-          {/* Композиция */}
           <ListItem key={2} disablePadding>
             <ListItemButton component={Link} to="/compozition" selected={"/compozition" === location.pathname}>
               <ListItemIcon>
@@ -108,7 +103,6 @@ export default function Navbar({ content, onSearch }) {
             </ListItemButton>
           </ListItem>
 
-          {/* Графические функции */}
           <ListItem key={2} disablePadding>
             <ListItemButton component={Link} to="/member" selected={"/member" === location.pathname}>
               <ListItemIcon>
