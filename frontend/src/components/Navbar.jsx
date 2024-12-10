@@ -57,7 +57,7 @@ export default function Navbar({ content, onSearch }) {
             <IconButton
               color="inherit"
               component={Link}
-              to="/auth" // Переход на страницу регистрации
+              to="/login" // Переход на страницу регистрации
             >
               <AccountCircle />
             </IconButton>
