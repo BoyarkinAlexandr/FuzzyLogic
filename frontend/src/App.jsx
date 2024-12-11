@@ -38,7 +38,7 @@ function App() {
             <Route path="/member" element={<MembershipFunction />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/account-activate" element={<ActivatePage />} />
+            <Route path="/activate/:uid/:token" element={<ActivatePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="*" element={<NotFoundPage />} />
             <Route path="/asection" element={<Asection />} />

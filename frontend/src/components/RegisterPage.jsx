@@ -4,7 +4,7 @@ import { TextField, Button, CircularProgress, Container, Typography } from '@mui
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { register } from '../features/auth/authSlice';
+import { register, reset } from '../features/auth/authSlice'
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -17,11 +17,10 @@ const RegisterPage = () => {
 
   const { first_name, last_name, email, password, re_password } = formData;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   
   // Используем состояние из Redux
   const { isLoading, isError, isSuccess, message, user } = useSelector((state) => state.auth);
-
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -54,13 +53,17 @@ const RegisterPage = () => {
 
   useEffect(() => {
     if (isError) {
-      toast.error(message);
+        toast.error(message)
     }
-    if (isSuccess && user) {
-      navigate('/');
-      toast.success("Активация аккаунта отправлена на вашу почту. Проверьте её!");
+
+    if (isSuccess || user) {
+        navigate("/login")
+        toast.success("Активация аккаунта отправлена на вашу почту. Проверьте её!")
     }
-  }, [isError, isSuccess, user, message, navigate]);
+
+    dispatch(reset())
+
+}, [isError, isSuccess, user, navigate, dispatch]);
 
   const handleResetPassword = () => {
     navigate('/reset-password');
@@ -72,7 +75,6 @@ const RegisterPage = () => {
         Регистрация <BiUser />
       </Typography>
 
-      {/* Показать индикатор загрузки, если идет регистрация */}
       {isLoading && <CircularProgress />}
 
       <form onSubmit={handleSubmit}>

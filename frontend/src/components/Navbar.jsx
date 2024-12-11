@@ -47,11 +47,7 @@ export default function Navbar({ content, onSearch }) {
           </Typography>
 
           {/* Поле поиска по центру */}
-          <Box sx={{ position: 'absolute', // Используем абсолютное позиционирование
-          left: '50%', // Выравнивание по горизонтали
-          transform: 'translateX(-50%)', // Центрирование
-          display: 'flex',
-          justifyContent: 'center',
+          <Box sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex',justifyContent: 'center',
           zIndex: 1,}}>
             <TextField
               label="Поиск метода"

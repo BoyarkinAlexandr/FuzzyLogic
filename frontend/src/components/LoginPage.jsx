@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 import { login, reset } from '../features/auth/authSlice';  // Здесь правильный импорт reset
 import { Link, useNavigate } from "react-router-dom";
 import { BiLogInCircle } from "react-icons/bi";
@@ -17,6 +17,9 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const { isLoading: authLoading, isError, isSuccess, message } = useSelector((state) => state.auth);
+
+  // Handle form input changes
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -24,10 +27,11 @@ const LoginPage = () => {
     }));
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Проверка на пустые поля
+    // Check for empty fields
     if (!email || !password) {
       toast.error("Пожалуйста, заполните все поля!", { autoClose: 2000 });
       return;
@@ -35,20 +39,24 @@ const LoginPage = () => {
 
     const userData = { email, password };
     
-    dispatch(login(userData));  // Начинаем процесс входа
-    setIsLoading(true);
-
-    try {
-      // Убираем тестовую проверку и используем реальный логин
-      toast.success("Успешный вход!");
-      navigate("/");
-    } catch (error) {
-      dispatch(reset());  // Сбрасываем состояние в случае ошибки
-      toast.error(error.message || "Не получилось войти! Попробуйте заново!", { autoClose: 2000 });
-    } finally {
-      setIsLoading(false);
-    }
+    dispatch(login(userData));  // Dispatch login action
+    setIsLoading(true);  // Set loading state
   };
+
+  // Effect to handle success or error state changes
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Успешный вход!");
+      navigate("/");  // Redirect to home on success
+    }
+
+    if (isError) {
+      toast.error(message || "Не получилось войти! Попробуйте заново!", { autoClose: 2000 });
+      dispatch(reset());  // Reset auth state after error
+    }
+
+    setIsLoading(false);  // Turn off loading once success/error is processed
+  }, [isSuccess, isError, message, dispatch, navigate]);
 
   return (
     <Container
@@ -78,13 +86,13 @@ const LoginPage = () => {
           borderColor: "#1976d2",
         }}
       >
-        {isLoading && (
+        {authLoading && (
           <Box sx={{ display: "flex", justifyContent: "center", marginBottom: 3 }}>
             <CircularProgress />
           </Box>
         )}
 
-        {!isLoading && (
+        {!authLoading && (
           <Box
             component="form"
             onSubmit={handleSubmit}
