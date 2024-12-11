@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useDispatch } from 'react-redux';
+import { login, reset } from '../features/auth/authSlice';  // Здесь правильный импорт reset
 import { Link, useNavigate } from "react-router-dom";
 import { BiLogInCircle } from "react-icons/bi";
 import { toast } from "react-toastify";
@@ -13,6 +15,7 @@ const LoginPage = () => {
 
   const { email, password } = formData;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -23,16 +26,24 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Проверка на пустые поля
+    if (!email || !password) {
+      toast.error("Пожалуйста, заполните все поля!", { autoClose: 2000 });
+      return;
+    }
+
+    const userData = { email, password };
+    
+    dispatch(login(userData));  // Начинаем процесс входа
     setIsLoading(true);
 
     try {
-      if (email === "test@example.com" && password === "password", { autoClose: 1000 }) {
-        toast.success("Успешный вход!");
-        navigate("/");
-      } else {
-        throw new Error("Неверные данные!", { autoClose: 2000 });
-      }
+      // Убираем тестовую проверку и используем реальный логин
+      toast.success("Успешный вход!");
+      navigate("/");
     } catch (error) {
+      dispatch(reset());  // Сбрасываем состояние в случае ошибки
       toast.error(error.message || "Не получилось войти! Попробуйте заново!", { autoClose: 2000 });
     } finally {
       setIsLoading(false);

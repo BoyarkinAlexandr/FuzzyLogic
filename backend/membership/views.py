@@ -5,6 +5,8 @@ import json
 import numpy as np
 from .functions import s_function, z_function, triangle_function, trapezoidal_function
 
+
+
 @csrf_exempt
 def calculate_membership_function(request):
     if request.method == "POST":
@@ -39,6 +41,12 @@ def calculate_membership_function(request):
                 c = params.get("c")
                 d = params.get("d")
                 y = trapezoidal_function(x, a, b, c, d)
+            elif function_type == "T":
+                a = params.get("a")
+                b = params.get("b")
+                c = params.get("c")
+                d = params.get("d")
+                y = t_function(x, a, b, c, d)
             else:
                 return JsonResponse({"error": "Invalid function type"}, status=400)
 

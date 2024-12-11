@@ -33,7 +33,47 @@ const register = async (userData) => {
 
 
 
-const authService = { register }
+const login = async (userData) => {
+    const config = {
+
+        headers: {
+            "Content-type": "application/json"
+        }
+    }
+
+    const response = await axios.post(LOGIN_URL, userData, config)
+
+    if (response.data) {
+        localStorage.setItem("user", JSON.stringify(response.data))
+    }
+
+    return response.data
+
+
+}
+
+
+const logout = () => {
+    return localStorage.removeItem("user")
+}
+
+
+const activate = async (userData) => {
+    const config = {
+        headers: {
+            "Content-type": "application/json"
+        }
+    }
+
+    const response = await axios.post(ACTIVATE_URL, userData, config)
+
+    return response.data
+}
+
+
+
+
+const authService = { register, login, logout, activate }
 
 
 export default authService

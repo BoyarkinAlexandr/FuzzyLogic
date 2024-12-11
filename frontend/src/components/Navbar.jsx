@@ -14,14 +14,28 @@ import HomeIcon from '@mui/icons-material/Home';
 import LineAxisIcon from '@mui/icons-material/LineAxis';
 import IconButton from '@mui/material/IconButton';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout, reset } from '../features/auth/authSlice';
+import { toast } from "react-toastify";
 
 const drawerWidth = 240;
 
 export default function Navbar({ content, onSearch }) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user } = useSelector((state) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    dispatch(reset());
+    navigate("/"); // После выхода переходим на главную страницу
+    toast.success("Вы успешно вышли!");
+  };
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -33,7 +47,12 @@ export default function Navbar({ content, onSearch }) {
           </Typography>
 
           {/* Поле поиска по центру */}
-          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center'}}>
+          <Box sx={{ position: 'absolute', // Используем абсолютное позиционирование
+          left: '50%', // Выравнивание по горизонтали
+          transform: 'translateX(-50%)', // Центрирование
+          display: 'flex',
+          justifyContent: 'center',
+          zIndex: 1,}}>
             <TextField
               label="Поиск метода"
               variant="outlined"
@@ -49,19 +68,52 @@ export default function Navbar({ content, onSearch }) {
             />
           </Box>
 
-          {/* Иконка профиля и текст рядом с ней */}
+          {/* Иконка профиля или кнопка "Войти" */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant="body1" sx={{ marginRight: 1 }}>
-              Username
-            </Typography>
-            <IconButton
-              color="inherit"
-              component={Link}
-              to="/login" // Переход на страницу регистрации
-            >
-              <AccountCircle />
-            </IconButton>
+            {user ? (
+              <>
+                {/* Кнопка "Выйти" */}
+                <IconButton
+                  color="inherit" // Красный цвет
+                  onClick={handleLogout} // Логика выхода
+                  sx={{
+                    borderRadius: 5, // Закругленные углы
+                    padding: '6px 12px', // Размер кнопки
+                    fontStyle: 'oblique',
+                    '&:hover': {
+                      backgroundColor: '#f44336', // Цвет при наведении
+                    },
+                  }}
+                >
+                  Выход
+                </IconButton>
+              </>
+            ) : (
+              <>
+                {/* Кнопка "Войти" с иконкой "+" */}
+                <IconButton
+                  color="inherit"
+                  component={Link}
+                  to="/login" // Переход на страницу входа
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderRadius: 5, // Закругленные углы
+                    padding: '6px 12px',
+                    fontWeight: 'medium',
+                    fontStyle: 'oblique',
+                    '&:hover': {
+                      backgroundColor: '#195fa3', // Цвет при наведении
+                    },
+                  }}
+                >
+                  Вход
+                <AccountCircle sx={{ fontSize: 30, marginLeft: 1}} /> {/* Иконка "+" с уменьшенным размером */}
+                </IconButton>
+              </>
+            )}
           </Box>
+
         </Toolbar>
       </AppBar>
 
@@ -111,7 +163,6 @@ export default function Navbar({ content, onSearch }) {
               <ListItemText primary={"Функции принадлежности"} />
             </ListItemButton>
           </ListItem>
-
 
           <ListItem key={5} disablePadding>
             <ListItemButton component={Link} to="/asection" selected={"/member" === location.pathname}>
