@@ -85,7 +85,7 @@ export default function Navbar({ content, onSearch }) {
             </ListItemButton>
           </ListItem>
 
-          <ListItem key={1} disablePadding>
+          <ListItem key={2} disablePadding>
             <ListItemButton component={Link} to="/graphs" selected={"/graphs" === location.pathname}>
               <ListItemIcon>
                 <AirlineStopsIcon />
@@ -94,7 +94,7 @@ export default function Navbar({ content, onSearch }) {
             </ListItemButton>
           </ListItem>
 
-          <ListItem key={2} disablePadding>
+          <ListItem key={3} disablePadding>
             <ListItemButton component={Link} to="/compozition" selected={"/compozition" === location.pathname}>
               <ListItemIcon>
                 <AppsIcon />
@@ -103,12 +103,22 @@ export default function Navbar({ content, onSearch }) {
             </ListItemButton>
           </ListItem>
 
-          <ListItem key={2} disablePadding>
+          <ListItem key={4} disablePadding>
             <ListItemButton component={Link} to="/member" selected={"/member" === location.pathname}>
               <ListItemIcon>
                 <LineAxisIcon />
               </ListItemIcon>
               <ListItemText primary={"Функции принадлежности"} />
+            </ListItemButton>
+          </ListItem>
+
+
+          <ListItem key={5} disablePadding>
+            <ListItemButton component={Link} to="/asection" selected={"/member" === location.pathname}>
+              <ListItemIcon>
+                <LineAxisIcon />
+              </ListItemIcon>
+              <ListItemText primary={"α-сечение"} />
             </ListItemButton>
           </ListItem>
         </Box>

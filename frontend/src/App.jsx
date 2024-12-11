@@ -15,6 +15,7 @@ import ResetPasswordPage from './components/ResetPasswordPage';
 import ActivatePage from './components/ActivatePage';
 import LoginPage from './components/LoginPage';
 import NotFoundPage from './components/NotFoundPage';
+import Asection from './components/ASection';
 
 
 
@@ -40,6 +41,7 @@ function App() {
             <Route path="/account-activate" element={<ActivatePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="*" element={<NotFoundPage />} />
+            <Route path="/asection" element={<Asection />} />
           </Routes>
         }
         onSearch={handleSearch} // Передаем функцию для обновления searchQuery

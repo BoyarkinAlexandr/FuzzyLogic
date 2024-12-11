@@ -7,7 +7,7 @@ const methods = [
   { id: 1, name: "Графы", description: "Краткое описание метода 1. Этот метод помогает решать задачи оптимизации.", imageUrl: "./images/graphs.png", link: "/graphs" },
   { id: 2, name: "Композиция", description: "Краткое описание метода 2. Этот метод используется для анализа данных.", imageUrl: "./images/matrix.jpg", link: "/compozition" },
   { id: 3, name: "Функции принадлежности", description: "Краткое описание метода 3. Этот метод позволяет решать задачи с многими переменными.", imageUrl: "./images/function.jpg", link: "/member" },
-  { id: 4, name: "Метод 4", description: "Краткое описание метода 4. Этот метод полезен для работы с большими данными.", imageUrl: "https://via.placeholder.com/150", link: "/method4" },
+  { id: 4, name: "α-сечениe", description: "Краткое описание метода 4. Этот метод полезен для работы с большими данными.", imageUrl: "https://via.placeholder.com/150", link: "/asection" },
   { id: 5, name: "Метод 5", description: "Краткое описание метода 5. Этот метод помогает в задачах с искусственным интеллектом.", imageUrl: "https://via.placeholder.com/150", link: "/method5" },
   { id: 6, name: "Метод 6", description: "Краткое описание метода 6. Этот метод используется в экономике для прогнозирования.", imageUrl: "https://via.placeholder.com/150", link: "/method6" },
   { id: 7, name: "Метод 7", description: "Краткое описание метода 7. Этот метод применяется в области биоинформатики.", imageUrl: "https://via.placeholder.com/150", link: "/method7" },
