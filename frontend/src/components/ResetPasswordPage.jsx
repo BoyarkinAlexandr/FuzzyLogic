@@ -1,40 +1,47 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { toast } from 'react-toastify'
 import { BiLogInCircle } from "react-icons/bi"
+import { useDispatch, useSelector } from "react-redux"
 import { Button, TextField, CircularProgress, Typography } from '@mui/material'
+import { resetPassword, reset } from "../features/auth/authSlice"
 
 const ResetPasswordPage = () => {
     const [formData, setFormData] = useState({
         email: "",
     })
-    const [isLoading, setIsLoading] = useState(false)
 
-    const { email } = formData
+    const dispatch = useDispatch()
     const navigate = useNavigate()
 
+    const { isLoading, isError, isSuccess, message } = useSelector((state) => state.auth)
+
+    const { email } = formData
+
     const handleChange = (e) => {
-        setFormData((prev) => ({
-            ...prev,
-            [e.target.name]: e.target.value,
+        const { name, value } = e.target
+        setFormData((prevState) => ({
+            ...prevState,
+            [name]: value,
         }))
     }
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault()
-        setIsLoading(true)
-
-        try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-            toast.success("Сброс пароля был выслан вам на почту.", { autoClose: 2000 })
-            navigate("/")
-        } catch (error) {
-            toast.error("Ошибка. Попробуйте снова.", { autoClose: 2000 })
-        } finally {
-            setIsLoading(false)
-        }
+        const userData = { email }
+        dispatch(resetPassword(userData))
     }
+
+    useEffect(() => {
+        if (isError) {
+            toast.error(message)
+        }
+        if (isSuccess) {
+            navigate("/login")
+            toast.success("Сброс пароля был выслан вам на почту")
+            dispatch(reset()); 
+        }
+    }, [isError, isSuccess, message, navigate])
 
     return (
         <div className="container auth__container">

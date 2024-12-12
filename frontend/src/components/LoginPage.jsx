@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { login, reset } from '../features/auth/authSlice';  // Здесь правильный импорт reset
+import { getUserInfo, login, reset } from '../features/auth/authSlice';  // Здесь правильный импорт reset
 import { Link, useNavigate } from "react-router-dom";
 import { BiLogInCircle } from "react-icons/bi";
 import { toast } from "react-toastify";
@@ -53,6 +53,7 @@ const LoginPage = () => {
     if (isError) {
       toast.error(message || "Не получилось войти! Попробуйте заново!", { autoClose: 2000 });
       dispatch(reset());  // Reset auth state after error
+      dispatch(getUserInfo())
     }
 
     setIsLoading(false);  // Turn off loading once success/error is processed

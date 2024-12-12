@@ -18,8 +18,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { logout, reset } from '../features/auth/authSlice';
 import { toast } from "react-toastify";
+import HdrAutoIcon from '@mui/icons-material/HdrAuto';
+import { useEffect } from 'react'; 
+import { getUserInfo } from "../features/auth/authSlice"
 
 const drawerWidth = 240;
 
@@ -28,11 +32,19 @@ export default function Navbar({ content, onSearch }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user } = useSelector((state) => state.auth);
+  const {user, userInfo } = useSelector((state) => state.auth);
+
+
+  useEffect(() => {
+    if (user && !userInfo.first_name) {
+      dispatch(getUserInfo()); // Если есть пользователь, запрашиваем его информацию
+    }
+  }, [user, userInfo, dispatch]);
 
   const handleLogout = () => {
     dispatch(logout());
     dispatch(reset());
+    localStorage.removeItem("user");  // Удаляем пользователя из localStorage
     navigate("/"); // После выхода переходим на главную страницу
     toast.success("Вы успешно вышли!");
   };
@@ -66,19 +78,19 @@ export default function Navbar({ content, onSearch }) {
 
           {/* Иконка профиля или кнопка "Войти" */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {user ? (
+            {userInfo?.first_name ? (
               <>
-                {/* Кнопка "Выйти" */}
+                <Typography variant="body1" sx={{ marginRight: 2 }}>
+                  {userInfo.first_name} {/* Выводим имя пользователя */}
+                </Typography>
                 <IconButton
-                  color="inherit" // Красный цвет
-                  onClick={handleLogout} // Логика выхода
+                  color="inherit"
+                  onClick={handleLogout}
                   sx={{
-                    borderRadius: 5, // Закругленные углы
-                    padding: '6px 12px', // Размер кнопки
+                    borderRadius: 5,
+                    padding: '6px 12px',
                     fontStyle: 'oblique',
-                    '&:hover': {
-                      backgroundColor: '#f44336', // Цвет при наведении
-                    },
+                    '&:hover': { backgroundColor: '#f44336' },
                   }}
                 >
                   Выход
@@ -86,25 +98,22 @@ export default function Navbar({ content, onSearch }) {
               </>
             ) : (
               <>
-                {/* Кнопка "Войти" с иконкой "+" */}
                 <IconButton
                   color="inherit"
                   component={Link}
-                  to="/login" // Переход на страницу входа
+                  to="/login"
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    borderRadius: 5, // Закругленные углы
+                    borderRadius: 5,
                     padding: '6px 12px',
                     fontWeight: 'medium',
                     fontStyle: 'oblique',
-                    '&:hover': {
-                      backgroundColor: '#195fa3', // Цвет при наведении
-                    },
+                    '&:hover': { backgroundColor: '#195fa3' },
                   }}
                 >
                   Вход
-                <AccountCircle sx={{ fontSize: 30, marginLeft: 1}} /> {/* Иконка "+" с уменьшенным размером */}
+                  <AccountCircle sx={{ fontSize: 30, marginLeft: 1 }} />
                 </IconButton>
               </>
             )}
@@ -161,9 +170,9 @@ export default function Navbar({ content, onSearch }) {
           </ListItem>
 
           <ListItem key={5} disablePadding>
-            <ListItemButton component={Link} to="/asection" selected={"/member" === location.pathname}>
+            <ListItemButton component={Link} to="/asection" selected={"/asection" === location.pathname}>
               <ListItemIcon>
-                <LineAxisIcon />
+                <HdrAutoIcon />
               </ListItemIcon>
               <ListItemText primary={"α-сечение"} />
             </ListItemButton>
