@@ -80,7 +80,7 @@ export default function Navbar({ content, onSearch }) {
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             {userInfo?.first_name ? (
               <>
-                <Typography variant="body1" sx={{ marginRight: 2 }}>
+                <Typography variant="body1" sx={{ marginRight: 2, fontSize: '20px',fontWeight: 'bold', }}>
                   {userInfo.first_name} {/* Выводим имя пользователя */}
                 </Typography>
                 <IconButton
