@@ -9,4 +9,5 @@ urlpatterns = [
     path("api/v1/auth/", include('djoser.urls')),  # Добавлен завершающий слэш
     path("api/v1/auth/", include('djoser.urls.jwt')),  # Добавлен завершающий слэш
     path("asection/", include('asection.urls')),
+    path("api/v1/quiz/", include("quiz.urls")),
 ]

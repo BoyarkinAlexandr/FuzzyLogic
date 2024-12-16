@@ -18,6 +18,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import AirlineStopsIcon from '@mui/icons-material/AirlineStops';
 import { useDispatch, useSelector } from 'react-redux';
+import CheckIcon from '@mui/icons-material/Check';
 
 import { logout, reset } from '../features/auth/authSlice';
 import { toast } from "react-toastify";
@@ -175,6 +176,16 @@ export default function Navbar({ content, onSearch }) {
                 <HdrAutoIcon />
               </ListItemIcon>
               <ListItemText primary={"α-сечение"} />
+            </ListItemButton>
+          </ListItem>
+
+
+          <ListItem key={6} disablePadding>
+            <ListItemButton component={Link} to="/quiz" selected={"/quiz" === location.pathname}>
+              <ListItemIcon>
+                <CheckIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Тесты"} />
             </ListItemButton>
           </ListItem>
         </Box>
