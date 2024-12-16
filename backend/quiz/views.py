@@ -18,24 +18,22 @@ class RetriveUpdateDestroyQuiz(generics.RetrieveUpdateDestroyAPIView):
 
 
 class QuizQuestion(APIView):
-    def get(self, request, format=None, **kwargs):
-        questions = Question.objects.filter(quiz_id=kwargs["quiz_id"])
+    def get(self, request, quiz_id, format=None):
+        questions = Question.objects.filter(quiz_id=quiz_id)
         serializer = QuestionSerializer(questions, many=True)
         return Response(serializer.data)
-    
 
-    def post(self, request, format=None, **kwargs):
-        quiz = Question.objects.get(id=kwargs["quiz_id"])
-        serializer = QuizSerializer(data=request.data)
-
-
+    def post(self, request, quiz_id, format=None):
+        serializer = QuestionSerializer(data=request.data)
         if serializer.is_valid():
+            # Связываем вопрос с викториной
+            quiz = Quiz.objects.get(id=quiz_id)
             serializer.save(quiz=quiz)
-            return Response( 
+            return Response(
                 {"message": "Вопрос успешно создан", "data": serializer.data},
-                status= status.HTTP_201_CREATED
-                
-                )
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
 class QuizQuestionDetail(APIView):

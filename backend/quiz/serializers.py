@@ -32,7 +32,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     quiz = QuizSerializer(read_only=True)  # Сериализация связанного объекта Quiz
-    answers = AnswerSerializer(many=True, read_only=True)  # Исправлено с "answer" на "answers"
+    answers = AnswerSerializer(many=True)  # Исправлено с "answer" на "answers"
 
     class Meta:
         model = Question
@@ -69,4 +69,3 @@ class QuestionSerializer(serializers.ModelSerializer):
         return instance
 
     
-

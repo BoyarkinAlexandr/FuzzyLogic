@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // Используем useNavigate вместо useHistory
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Button, Container, Grid, Typography, Box, CircularProgress, Stack, Card, CardContent } from "@mui/material";
+import {
+  Button,
+  Container,
+  Grid,
+  Typography,
+  Box,
+  CircularProgress,
+  Stack,
+  Card,
+  CardContent,
+} from "@mui/material";
 
 function QuizDetails() {
   const { id } = useParams();
@@ -10,24 +20,24 @@ function QuizDetails() {
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
   const [quizTitle, setQuizTitle] = useState("");
-  const [questionCount, setQuestionCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Используем useNavigate вместо useHistory
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/v1/quiz/question/quiz/${id}/`)
       .then((response) => {
-        if (response.data) {
+        if (response.data?.length) {
           setQuestions(response.data);
           setQuizTitle(response.data[0]?.quiz?.title || "Название викторины");
-          setQuestionCount(response.data.length);
-          setLoading(false);
+        } else {
+          setError("Вопросы не найдены.");
         }
+        setLoading(false);
       })
-      .catch((error) => {
-        setError("Ошибка загрузки вопросов.");
+      .catch(() => {
+        setError("Ошибка загрузки данных.");
         setLoading(false);
       });
   }, [id]);
@@ -59,7 +69,6 @@ function QuizDetails() {
         correctAnswers++;
       }
     });
-
     return {
       totalQuestions: questions.length,
       correctAnswers,
@@ -67,15 +76,27 @@ function QuizDetails() {
     };
   };
 
-  if (loading) {
-    return <CircularProgress />;
-  }
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentQuestionIndex]);
+
+  if (loading) return <CircularProgress />;
 
   if (error) {
     return (
       <Container>
         <Typography variant="h6" color="error">
           {error}
+        </Typography>
+      </Container>
+    );
+  }
+
+  if (!questions.length) {
+    return (
+      <Container>
+        <Typography variant="h6" color="textSecondary">
+          Вопросов нет.
         </Typography>
       </Container>
     );
@@ -102,38 +123,31 @@ function QuizDetails() {
 
   return (
     <Container>
-      {/* Заголовок "Пройти тест" */}
       <Typography variant="h4" gutterBottom align="center">
         Пройти тест
       </Typography>
-
-      {/* Название теста */}
       <Typography variant="h5" gutterBottom align="center">
         {quizTitle}
       </Typography>
-
-      {/* Все элементы внутри одного контейнера */}
-      <Box sx={{ mb: 4, padding: 2, borderRadius: 2, boxShadow: 2, minHeight: "40vh", minWidth: "40vw" }}>
-        {/* Количество вопросов */}
-        <Typography variant="h6" align="center" sx={{ marginBottom: 2 }}>
-          Количество вопросов: {questionCount}
+      <Box sx={{ mb: 4, p: 2, borderRadius: 2, boxShadow: 2, minHeight: "40vh" }}>
+        <Typography variant="h6" align="center" sx={{ mb: 2 }}>
+          Вопрос {currentQuestionIndex + 1}/{questions.length}
         </Typography>
-
-        {/* Вопрос и варианты ответов */}
-        <Card sx={{ mb: 2, minHeight: "auto", minWidth: "auto" }}>
+        <Card sx={{ mb: 2 }}>
           <CardContent>
             <Typography variant="h6" gutterBottom>
-              Вопрос {currentQuestionIndex + 1}: {currentQuestion.title}
+              {currentQuestion.title}
             </Typography>
-
-            {/* Сетка кнопок */}
             <Grid container spacing={2}>
-              {currentQuestion.answers.map((answer, index) => (
+              {currentQuestion.answers.map((answer) => (
                 <Grid item xs={6} key={answer.id}>
                   <Button
-                    variant="outlined"
+                    variant={
+                      selectedAnswers[currentQuestion.id] === answer.id.toString()
+                        ? "contained"
+                        : "outlined"
+                    }
                     fullWidth
-                    color={selectedAnswers[currentQuestion.id] === answer.id.toString() ? "primary" : "default"}
                     onClick={() => handleAnswerSelect(currentQuestion.id, answer.id)}
                   >
                     {answer.answer_text}
@@ -143,8 +157,6 @@ function QuizDetails() {
             </Grid>
           </CardContent>
         </Card>
-
-        {/* Навигация по вопросам */}
         <Stack direction="row" spacing={2} justifyContent="space-between" mt={3}>
           <Button
             variant="outlined"
@@ -155,18 +167,16 @@ function QuizDetails() {
           </Button>
           <Button
             variant="contained"
-            onClick={handleNextQuestion}
-            disabled={currentQuestionIndex === questions.length - 1} // Отключить кнопку на последнем вопросе
+            onClick={
+              currentQuestionIndex === questions.length - 1
+                ? () => setShowResults(true)
+                : handleNextQuestion
+            }
           >
-            Следующий вопрос
+            {currentQuestionIndex === questions.length - 1 ? "Завершить" : "Следующий вопрос"}
           </Button>
         </Stack>
       </Box>
-
-      {/* Кнопка завершения теста всегда видна */}
-      <Button variant="contained" onClick={() => setShowResults(true)} sx={{ mt: 3 }} fullWidth>
-        Завершить тест
-      </Button>
     </Container>
   );
 }

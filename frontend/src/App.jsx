@@ -19,6 +19,7 @@ import Asection from './components/ASection';
 import ResetPasswordPageConfirm from './components/ResetPasswordPageConfirm';
 import QuizDetails from './components/QuizDetails';
 import QuizList from './components/QuizList';
+import CreateQuestion from './components/CreateQuestion';
 import CreateQuiz from './components/CreateQuiz';
 
 
@@ -47,8 +48,9 @@ function App() {
             <Route path="/asection" element={<Asection />} />
             <Route path="/password/reset/confirm/:uid/:token" element={<ResetPasswordPageConfirm />} />
             <Route path="/quiz" element={<QuizList />} />
-            <Route path="/quiz/:id" element={<QuizDetails />} /> 
-            <Route path="/createquiz" element={<CreateQuiz />} /> 
+            <Route path="/quiz/:id" element={<QuizDetails />} />
+            <Route path="/quiz/create" element={<CreateQuiz />} />
+            <Route path="/quiz/:quizId/create_question" element={<CreateQuestion />} />
 
           </Routes>
         }

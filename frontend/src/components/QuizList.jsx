@@ -26,10 +26,6 @@ function QuizSelector() {
     }
   };
 
-  const handleCreateQuiz = () => {
-    navigate("/createquiz");
-  };
-
   return (
     <Box sx={{ textAlign: "center", p: 3 }}>
       <Typography variant="h4" gutterBottom>Выберите тест</Typography>
@@ -64,14 +60,25 @@ function QuizSelector() {
         Начать
       </Button>
 
-      {/* Кнопка для создания нового теста */}
+      {/* Кнопка для перехода на страницу создания теста */}
       <Button 
         variant="outlined" 
         color="secondary" 
-        onClick={handleCreateQuiz} 
+        onClick={() => navigate("/quiz/create")} 
         sx={{ mt: 3 }}
       >
         Создать тест
+      </Button>
+
+      {/* Кнопка для перехода на страницу добавления вопросов */}
+      <Button 
+        variant="outlined" 
+        color="secondary" 
+        onClick={() => navigate(`/quiz/${selectedQuiz}/create_question`)} 
+        sx={{ mt: 3 }}
+        disabled={!selectedQuiz} // Делаем кнопку неактивной, если не выбран тест
+      >
+        Добавить вопрос
       </Button>
     </Box>
   );
