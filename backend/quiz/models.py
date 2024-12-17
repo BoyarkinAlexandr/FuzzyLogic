@@ -7,7 +7,7 @@ from autoslug import AutoSlugField
 class Quiz(models.Model):
     author = models.CharField(_("Author"), max_length=50)
     title = models.CharField(
-        _("Quiz Title"), max_length=255, unique=True, default=("New Quiz")
+        _("Название теста"), max_length=255, unique=True, default=("New Quiz")
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -17,8 +17,8 @@ class Quiz(models.Model):
         return self.questions.count()
     
     class Meta:
-        verbose_name = _("Quiz")
-        verbose_name_plural = _("Quizzes")
+        verbose_name = _("Тест")
+        verbose_name_plural = _("Тесты")
         ordering = ['id']
     
     def __str__(self):
@@ -36,8 +36,8 @@ class Question(models.Model):
 
 
     class Meta:
-        verbose_name = _("Question")
-        verbose_name_plural = _("Questions")
+        verbose_name = _("Вопрос")
+        verbose_name_plural = _("Вопросы")
         ordering = ['id']
 
     def __str__(self):
@@ -54,8 +54,8 @@ class Answer(models.Model):
 
 
     class Meta:
-        verbose_name = _("Answer")
-        verbose_name_plural = _("Answers")
+        verbose_name = _("Ответ")
+        verbose_name_plural = _("Ответы")
         ordering = ['id']
 
     def __str__(self):

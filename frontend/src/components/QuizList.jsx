@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import axios from "axios";
 import { Box, Typography, Button, MenuItem, FormControl, Select, InputLabel } from "@mui/material";
+import { toast } from "react-toastify";
 
 function QuizSelector() {
   const [quizzes, setQuizzes] = useState([]);
   const [selectedQuiz, setSelectedQuiz] = useState('');
   const navigate = useNavigate();
+
+  // Доступ к состоянию пользователя
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     axios.get("http://localhost:8000/api/v1/quiz/")
@@ -23,6 +28,14 @@ function QuizSelector() {
       navigate(`/quiz/${selectedQuiz}`);
     } else {
       alert("Пожалуйста, выберите тест.");
+    }
+  };
+
+  const handleProtectedAction = (action) => {
+    if (user) {
+      action();
+    } else {
+      toast.info("Пожалуйста, авторизуйтесь, чтобы создать тест или добавить вопрос.");
     }
   };
 
@@ -47,39 +60,44 @@ function QuizSelector() {
         </Select>
       </FormControl>
 
-      <Button 
-        variant="contained" 
-        color="primary" 
-        onClick={handleStartQuiz}
-        disabled={!selectedQuiz}
-        sx={{
-          backgroundColor: selectedQuiz ? "#8e24aa" : "#c1c1c1", 
-          '&:hover': { backgroundColor: selectedQuiz ? "#6a1b9a" : "#c1c1c1" }
-        }}
-      >
-        Начать
-      </Button>
+      {/* Используем Box с flexbox для выравнивания кнопок на одном уровне */}
+      <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={handleStartQuiz}
+          disabled={!selectedQuiz}
+          sx={{
+            backgroundColor: selectedQuiz ? "#8e24aa" : "#c1c1c1", 
+            '&:hover': { backgroundColor: selectedQuiz ? "#6a1b9a" : "#c1c1c1" }
+          }}
+        >
+          Начать
+        </Button>
 
-      {/* Кнопка для перехода на страницу создания теста */}
-      <Button 
-        variant="outlined" 
-        color="secondary" 
-        onClick={() => navigate("/quiz/create")} 
-        sx={{ mt: 3 }}
-      >
-        Создать тест
-      </Button>
+        {/* Кнопка для перехода на страницу создания теста */}
+        <Button 
+          variant="outlined" 
+          color="secondary" 
+          onClick={() => handleProtectedAction(() => navigate("/quiz/create"))}
+        >
+          Создать тест
+        </Button>
 
-      {/* Кнопка для перехода на страницу добавления вопросов */}
-      <Button 
-        variant="outlined" 
-        color="secondary" 
-        onClick={() => navigate(`/quiz/${selectedQuiz}/create_question`)} 
-        sx={{ mt: 3 }}
-        disabled={!selectedQuiz} // Делаем кнопку неактивной, если не выбран тест
-      >
-        Добавить вопрос
-      </Button>
+        {/* Кнопка для перехода на страницу добавления вопросов */}
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={() => handleProtectedAction(() => navigate(`/quiz/${selectedQuiz}/create_question`))}
+          disabled={!selectedQuiz} // Делаем кнопку неактивной, если не выбран тест
+          sx={{
+            backgroundColor: selectedQuiz ? "#8e24aa" : "#c1c1c1", 
+            '&:hover': { backgroundColor: selectedQuiz ? "#6a1b9a" : "#c1c1c1" }
+          }}
+        >
+          Добавить вопрос
+        </Button>
+      </Box>
     </Box>
   );
 }
