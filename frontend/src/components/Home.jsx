@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const methods = [
-  { id: 1, name: "Графы", description: "Краткое описание метода 1. Этот метод помогает решать задачи оптимизации.", imageUrl: "./images/graph.webp", link: "/graphs" },
-  { id: 2, name: "Композиция", description: "Краткое описание метода 2. Этот метод используется для анализа данных.", imageUrl: "./images/matrixx.webp", link: "/compozition" },
-  { id: 3, name: "Функции принадлежности", description: "Краткое описание метода 3. Этот метод позволяет решать задачи с многими переменными.", imageUrl: "./images/func.webp", link: "/member" },
-  { id: 4, name: "α-сечениe", description: "Краткое описание метода 4. Этот метод полезен для работы с большими данными.", imageUrl: "./images/alfa.webp", link: "/asection" },
+  { id: 1, name: "Графы", description: "Краткое описание метода 1. Этот метод помогает решать задачи оптимизации.", imageUrl: "", link: "/graphs" },
+  { id: 2, name: "Композиция", description: "Краткое описание метода 2. Этот метод используется для анализа данных.", imageUrl: "", link: "/compozition" },
+  { id: 3, name: "Функции принадлежности", description: "Краткое описание метода 3. Этот метод позволяет решать задачи с многими переменными.", imageUrl: "", link: "/member" },
+  { id: 4, name: "α-сечениe", description: "Краткое описание метода 4. Этот метод полезен для работы с большими данными.", imageUrl: "", link: "/asection" },
   { id: 5, name: "Метод 5", description: "Краткое описание метода 5. Этот метод помогает в задачах с искусственным интеллектом.", imageUrl: "", link: "/method5" },
   { id: 6, name: "Метод 6", description: "Краткое описание метода 6. Этот метод используется в экономике для прогнозирования.", imageUrl: "", link: "/method6" },
   { id: 7, name: "Метод 7", description: "Краткое описание метода 7. Этот метод применяется в области биоинформатики.", imageUrl: "", link: "/method7" },

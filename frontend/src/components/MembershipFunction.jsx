@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import ChartAnnotation from 'chartjs-plugin-annotation';
-ChartJS.register(ChartAnnotation);
+import annotationPlugin from 'chartjs-plugin-annotation';
 import { Line } from "react-chartjs-2";
 import {
   TextField,
@@ -16,8 +15,9 @@ import {
   Checkbox,
   FormControlLabel,
   Typography,
-  Box
+  Box,
 } from "@mui/material";
+import { Delete } from '@mui/icons-material';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -30,9 +30,10 @@ import {
 } from 'chart.js';
 
 // Импортируем react-katex для рендеринга формул
-import { BlockMath, InlineMath } from 'react-katex';  // Заменили MathJax на react-katex
-import 'katex/dist/katex.min.css';  // Подключаем стили для KaTeX
+import { BlockMath, InlineMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
 
+// Регистрируем все компоненты Chart.js и плагин аннотаций
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -40,7 +41,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  annotationPlugin
 );
 
 const MembershipFunction = () => {
@@ -112,9 +114,30 @@ const MembershipFunction = () => {
   const [showBLine, setShowBLine] = useState(true);
   const [showCLine, setShowCLine] = useState(true);
 
+  // Состояния для видео
+  const [openVideoDialog, setOpenVideoDialog] = useState(false);
+  const [openAddVideoDialog, setOpenAddVideoDialog] = useState(false);
+  const [newVideoUrl, setNewVideoUrl] = useState("");
+  const [videos, setVideos] = useState([]);
+  const topic = "membership";
 
-  const [openVideoDialog, setOpenVideoDialog] = useState(false);  // Стейт для открытия диалога с видео
-
+  // Загрузка видео при монтировании компонента
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        console.log(`Fetching videos for topic: ${topic}`);
+        const response = await axios.get(`http://localhost:8000/api/videos/${topic}/`);
+        console.log('Videos fetched:', response.data);
+        // Фильтруем видео, у которых нет url
+        const validVideos = (response.data || []).filter(video => video.url && typeof video.url === 'string');
+        setVideos(validVideos);
+      } catch (error) {
+        console.error('Ошибка при загрузке видео:', error);
+        alert(`Не удалось загрузить видео с сервера: ${error.response?.data?.error || error.message}`);
+      }
+    };
+    fetchVideos();
+  }, [topic]);
 
   const handleOpenVideoDialog = () => {
     setOpenVideoDialog(true);
@@ -124,6 +147,77 @@ const MembershipFunction = () => {
     setOpenVideoDialog(false);
   };
 
+  const handleOpenAddVideoDialog = () => {
+    setOpenAddVideoDialog(true);
+  };
+
+  const handleCloseAddVideoDialog = () => {
+    setOpenAddVideoDialog(false);
+    setNewVideoUrl("");
+  };
+
+  const handleAddVideo = async () => {
+    if (!newVideoUrl) {
+      alert("Пожалуйста, введите URL видео.");
+      return;
+    }
+  
+    try {
+      await axios.post(`http://localhost:8000/api/videos/${topic}/add/`, {
+        url: newVideoUrl,
+        topic: topic,
+      });
+      // Запрашиваем актуальный список видео с сервера
+      const response = await axios.get(`http://localhost:8000/api/videos/${topic}/`);
+      const validVideos = (response.data || []).filter(video => video.url && typeof video.url === 'string');
+      setVideos(validVideos);
+      handleCloseAddVideoDialog();
+    } catch (error) {
+      console.error('Ошибка при добавлении видео:', error);
+      alert(`Не удалось добавить видео: ${error.response?.data?.error || error.message}`);
+    }
+  }
+
+  const handleDeleteVideo = async (videoId) => {
+    try {
+      console.log(`Deleting video with ID: ${videoId} for topic: ${topic}`);
+      const response = await axios.post(`http://localhost:8000/api/videos/${topic}/delete/`, { id: videoId });
+      console.log('Delete video response:', response.data);
+      // Фильтруем видео, у которых нет url
+      const validVideos = (response.data.videos || []).filter(video => video.url && typeof video.url === 'string');
+      setVideos(validVideos);
+    } catch (error) {
+      console.error('Ошибка при удалении видео:', error);
+      alert(`Не удалось удалить видео: ${error.response?.data?.error || error.message}`);
+    }
+  };
+
+  // Функции для обработки URL видео
+  const isYouTubeUrl = (url) => {
+    return url && typeof url === 'string' && (url.includes('youtube.com') || url.includes('youtu.be'));
+  };
+
+  const getYouTubeVideoId = (url) => {
+    if (!url || typeof url !== 'string') return null;
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  };
+
+  const isVkUrl = (url) => {
+    return url && typeof url === 'string' && (url.includes('vk.com') || url.includes('vkvideo.ru'));
+  };
+
+  const getVkEmbedUrl = (url) => {
+    if (!url || typeof url !== 'string') return null;
+    const regex = /(?:vk\.com\/video|vkvideo\.ru\/video-)([0-9-_]+)/;
+    const match = url.match(regex);
+    if (match && match[1]) {
+      const [groupId, videoId] = match[1].split('_');
+      return `https://vk.com/video_ext.php?oid=-${groupId}&id=${videoId}`;
+    }
+    return null;
+  };
 
   const handleFunctionTypeChange = (e) => {
     const selectedFunction = e.target.value;
@@ -237,8 +331,6 @@ const MembershipFunction = () => {
         Построить график
       </Button>
 
-      
-
       <Button
         variant="outlined"
         color="secondary"
@@ -253,27 +345,105 @@ const MembershipFunction = () => {
         sx={{
           marginTop: "20px",
           marginLeft: "10px",
-          backgroundColor: "#e53935", // Задайте ваш цвет
+          backgroundColor: "#e53935",
         }}
         onClick={handleOpenVideoDialog}
         style={{ marginTop: "20px", marginLeft: "10px" }}
         disabled={isLoading}
       >
-         Видео
+        Видео
       </Button>
-      
 
-      {/* Диалоговое окно с видео из ВКонтакте */}
+      {/* Диалоговое окно с видео */}
       <Dialog open={openVideoDialog} onClose={handleCloseVideoDialog} maxWidth="md" fullWidth>
-        <DialogTitle>Посмотреть видео</DialogTitle>
+        <DialogTitle>Видео</DialogTitle>
         <DialogContent>
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <iframe width="720" height="405" src="https://rutube.ru/play/embed/471b8f1a6283227c0ae361837bb0b32b/" frameBorder="0" allow="clipboard-write; autoplay" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
-          </Box>
+          {videos.length === 0 ? (
+            <Typography>Видео пока не добавлены</Typography>
+          ) : (
+            videos.map((video) => (
+              video.url && typeof video.url === 'string' ? (
+                <Box key={video.id} sx={{ marginBottom: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Typography variant="subtitle1">Видео {video.id}</Typography>
+                    {isYouTubeUrl(video.url) ? (
+                      <iframe
+                        width="100%"
+                        height="315"
+                        src={`https://www.youtube.com/embed/${getYouTubeVideoId(video.url)}`}
+                        title={`YouTube video ${video.id}`}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : isVkUrl(video.url) ? (
+                      <iframe
+                        width="100%"
+                        height="315"
+                        src={getVkEmbedUrl(video.url)}
+                        title={`VK video ${video.id}`}
+                        frameBorder="0"
+                        allow="autoplay; encrypted-media"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <video
+                        width="100%"
+                        controls
+                        onError={() => alert(`Не удалось загрузить видео ${video.id}. Проверьте URL или формат видео.`)}
+                      >
+                        <source src={video.url} type="video/mp4" />
+                        <source src={video.url} type="video/webm" />
+                        Ваш браузер не поддерживает воспроизведение видео.
+                      </video>
+                    )}
+                  </Box>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<Delete />}
+                    onClick={() => handleDeleteVideo(video.id)}
+                  >
+                    Удалить
+                  </Button>
+                </Box>
+              ) : null
+            ))
+          )}
         </DialogContent>
         <DialogActions>
+          <Button onClick={handleOpenAddVideoDialog} color="primary">
+            Добавить видео
+          </Button>
           <Button onClick={handleCloseVideoDialog} color="primary">
             Закрыть
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Диалоговое окно для добавления видео */}
+      <Dialog open={openAddVideoDialog} onClose={handleCloseAddVideoDialog}>
+        <DialogTitle>Добавить новое видео</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="URL видео"
+            type="url"
+            fullWidth
+            variant="outlined"
+            value={newVideoUrl}
+            onChange={(e) => setNewVideoUrl(e.target.value)}
+            placeholder="https://example.com/video.mp4, https://www.youtube.com/watch?v=video_id или https://vkvideo.ru/video-13137988_456263708"
+          />
+          <Typography variant="caption" color="textSecondary" sx={{ mt: 1 }}>
+            Поддерживаются прямые ссылки на видео (MP4, WebM), YouTube и VK видео.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseAddVideoDialog}>Отмена</Button>
+          <Button onClick={handleAddVideo} color="primary">
+            Добавить
           </Button>
         </DialogActions>
       </Dialog>
@@ -289,9 +459,6 @@ const MembershipFunction = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
-      
-
 
       {/* Блок с формулами */}
       <Grid container spacing={2} style={{ marginTop: "20px" }}>
@@ -357,18 +524,18 @@ const MembershipFunction = () => {
                   annotations: [
                     functionType === "trapezoidal" && showBLine && {
                       type: "line",
-                      mode: "vertical",
-                      scaleID: "x",
-                      value: params.b - minX,
+                      xMin: params.b - minX,
+                      xMax: params.b - minX,
+                      xScaleID: "x",
                       borderColor: "rgba(255, 99, 132, 1)",
                       borderWidth: 2,
                       borderDash: [5, 5],
                     },
                     functionType === "trapezoidal" && showCLine && {
                       type: "line",
-                      mode: "vertical",
-                      scaleID: "x",
-                      value: params.c - minX,
+                      xMin: params.c - minX,
+                      xMax: params.c - minX,
+                      xScaleID: "x",
                       borderColor: "rgba(54, 162, 235, 1)",
                       borderWidth: 2,
                       borderDash: [5, 5],

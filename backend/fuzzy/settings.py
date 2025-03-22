@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'djoser',
     'asection',
     'quiz',
+    'videos',
 
 ]
 

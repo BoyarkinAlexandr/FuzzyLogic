@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   TextField, 
   Button, 
@@ -18,7 +18,7 @@ import {
   TableRow, 
   Paper 
 } from '@mui/material';
-import { PlayCircleOutline } from '@mui/icons-material';
+import { PlayCircleOutline, Delete } from '@mui/icons-material';
 import axios from 'axios';
 
 const Graphs = () => {
@@ -27,8 +27,28 @@ const Graphs = () => {
   const [loading, setLoading] = useState(false);
   const [graphImage, setGraphImage] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const [openTheoryDialog, setOpenTheoryDialog] = useState(false); // Теория диалог
+  const [openTheoryDialog, setOpenTheoryDialog] = useState(false);
   const [openVideoDialog, setOpenVideoDialog] = useState(false);
+  const [videos, setVideos] = useState([]);
+  const [newVideoUrl, setNewVideoUrl] = useState('');
+  const [openAddVideoDialog, setOpenAddVideoDialog] = useState(false);
+  const topic = 'graphs'; // Тема для этой страницы
+
+  // Загрузка видео с сервера при монтировании компонента
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        console.log(`Fetching videos for topic: ${topic}`);
+        const response = await axios.get(`http://localhost:8000/api/videos/${topic}/`);
+        console.log('Videos fetched:', response.data);
+        setVideos(response.data || []);
+      } catch (error) {
+        console.error('Ошибка при загрузке видео:', error);
+        alert(`Не удалось загрузить видео с сервера: ${error.response?.data?.error || error.message}`);
+      }
+    };
+    fetchVideos();
+  }, [topic]);
 
   const handleTransitionChange = (fromState, toState, value) => {
     setTransitions(prev => ({
@@ -61,6 +81,66 @@ const Graphs = () => {
     }
   };
 
+  const handleAddVideo = async () => {
+    if (newVideoUrl.trim() === '') {
+      alert('Пожалуйста, введите URL видео');
+      return;
+    }
+    
+    try {
+      new URL(newVideoUrl); // Проверка валидности URL
+      console.log(`Adding video: ${newVideoUrl} for topic: ${topic}`);
+      const response = await axios.post(`http://localhost:8000/api/videos/${topic}/add/`, { url: newVideoUrl });
+      console.log('Add video response:', response.data);
+      setVideos(response.data.videos || []);
+      setNewVideoUrl('');
+      setOpenAddVideoDialog(false);
+    } catch (error) {
+      console.error('Ошибка при добавлении видео:', error);
+      alert(`Не удалось добавить видео: ${error.response?.data?.error || error.message}`);
+    }
+  };
+
+  const handleDeleteVideo = async (videoId) => {
+    try {
+      console.log(`Deleting video with ID: ${videoId} for topic: ${topic}`);
+      const response = await axios.post(`http://localhost:8000/api/videos/${topic}/delete/`, { id: videoId });
+      console.log('Delete video response:', response.data);
+      setVideos(response.data.videos || []);
+    } catch (error) {
+      console.error('Ошибка при удалении видео:', error);
+      alert(`Не удалось удалить видео: ${error.response?.data?.error || error.message}`);
+    }
+  };
+
+  // Function to check if the URL is a YouTube link
+  const isYouTubeUrl = (url) => {
+    return url.includes('youtube.com') || url.includes('youtu.be');
+  };
+
+  // Function to extract YouTube video ID from URL
+  const getYouTubeVideoId = (url) => {
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  };
+
+  // Function to check if the URL is a VK video link
+  const isVkUrl = (url) => {
+    return url.includes('vk.com') || url.includes('vkvideo.ru');
+  };
+
+  // Function to extract VK video ID and construct embed URL
+  const getVkEmbedUrl = (url) => {
+    const regex = /(?:vk\.com\/video|vkvideo\.ru\/video-)([0-9-_]+)/;
+    const match = url.match(regex);
+    if (match && match[1]) {
+      const [groupId, videoId] = match[1].split('_');
+      return `https://vk.com/video_ext.php?oid=-${groupId}&id=${videoId}`;
+    }
+    return null;
+  };
+
   return (
     <div>
       <Grid container justifyContent="space-between">
@@ -76,7 +156,7 @@ const Graphs = () => {
           onClick={() => setOpenVideoDialog(true)}
           startIcon={<PlayCircleOutline />}
         >
-          Видео
+          Видео ({videos.length})
         </Button>
       </Grid>
 
@@ -174,6 +254,94 @@ const Graphs = () => {
           <Button onClick={() => setOpenTheoryDialog(false)} color="primary">
             Закрыть
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openVideoDialog} onClose={() => setOpenVideoDialog(false)} maxWidth="md" fullWidth>
+        <DialogTitle>Видео</DialogTitle>
+        <DialogContent>
+          {videos.length === 0 ? (
+            <Typography>Видео пока не добавлены</Typography>
+          ) : (
+            videos.map((video) => (
+              <Box key={video.id} sx={{ marginBottom: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ flexGrow: 1 }}>
+                  <Typography variant="subtitle1">Видео {video.id}</Typography>
+                  {isYouTubeUrl(video.url) ? (
+                    <iframe
+                      width="100%"
+                      height="315"
+                      src={`https://www.youtube.com/embed/${getYouTubeVideoId(video.url)}`}
+                      title={`YouTube video ${video.id}`}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : isVkUrl(video.url) ? (
+                    <iframe
+                      width="100%"
+                      height="315"
+                      src={getVkEmbedUrl(video.url)}
+                      title={`VK video ${video.id}`}
+                      frameBorder="0"
+                      allow="autoplay; encrypted-media"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <video
+                      width="100%"
+                      controls
+                      onError={() => alert(`Не удалось загрузить видео ${video.id}. Проверьте URL или формат видео.`)}
+                    >
+                      <source src={video.url} type="video/mp4" />
+                      <source src={video.url} type="video/webm" />
+                      Ваш браузер не поддерживает воспроизведение видео.
+                    </video>
+                  )}
+                </Box>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  startIcon={<Delete />}
+                  onClick={() => handleDeleteVideo(video.id)}
+                >
+                  Удалить
+                </Button>
+              </Box>
+            ))
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenAddVideoDialog(true)} color="primary">
+            Добавить видео
+          </Button>
+          <Button onClick={() => setOpenVideoDialog(false)} color="primary">
+            Закрыть
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openAddVideoDialog} onClose={() => setOpenAddVideoDialog(false)}>
+        <DialogTitle>Добавить новое видео</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="URL видео"
+            type="url"
+            fullWidth
+            variant="outlined"
+            value={newVideoUrl}
+            onChange={(e) => setNewVideoUrl(e.target.value)}
+            placeholder="https://example.com/video.mp4, https://www.youtube.com/watch?v=video_id или https://vkvideo.ru/video-13137988_456263708"
+          />
+          <Typography variant="caption" color="textSecondary" sx={{ mt: 1 }}>
+            Поддерживаются прямые ссылки на видео (MP4, WebM), YouTube и VK видео.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenAddVideoDialog(false)}>Отмена</Button>
+          <Button onClick={handleAddVideo} color="primary">Добавить</Button>
         </DialogActions>
       </Dialog>
     </div>
