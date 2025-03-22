@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'asection',
     'quiz',
     'videos',
+    'fuzzy_operations',
 
 ]
 

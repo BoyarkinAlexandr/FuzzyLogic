@@ -21,7 +21,7 @@ import QuizDetails from './components/QuizDetails';
 import QuizList from './components/QuizList';
 import CreateQuestion from './components/CreateQuestion';
 import CreateQuiz from './components/CreateQuiz';
-
+import FuzzyCalculator from './components/FuzzyCalculator';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,6 +51,7 @@ function App() {
             <Route path="/quiz/:id" element={<QuizDetails />} />
             <Route path="/quiz/create" element={<CreateQuiz />} />
             <Route path="/quiz/:quizId/create_question" element={<CreateQuestion />} />
+            <Route path="/fuzzycalculator" element={<FuzzyCalculator />} />
 
           </Routes>
         }

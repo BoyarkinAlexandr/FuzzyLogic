@@ -11,4 +11,5 @@ urlpatterns = [
     path("asection/", include('asection.urls')),
     path("api/v1/quiz/", include("quiz.urls")),
     path('api/', include('videos.urls')),
+    path('api/fuzzy_operations/', include('fuzzy_operations.urls')),
 ]

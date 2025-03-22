@@ -179,8 +179,17 @@ export default function Navbar({ content, onSearch }) {
             </ListItemButton>
           </ListItem>
 
-
           <ListItem key={6} disablePadding>
+            <ListItemButton component={Link} to="/fuzzycalculator" selected={"/fuzzycalculator" === location.pathname}>
+              <ListItemIcon>
+                <HdrAutoIcon />
+              </ListItemIcon>
+              <ListItemText primary={"Основные операции нечетких множеств"} />
+            </ListItemButton>
+          </ListItem>
+
+
+          <ListItem key={7} disablePadding>
             <ListItemButton component={Link} to="/quiz" selected={"/quiz" === location.pathname}>
               <ListItemIcon>
                 <CheckIcon />
