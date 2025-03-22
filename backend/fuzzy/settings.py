@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import timedelta
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,20 +10,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-s0*b@8hy()au41_h55zc9jepos0cfjv8!_=x@mm#m+zrbc^i(m'
+SECRET_KEY = config('SECRET_KEY')
 
-SIGNING_KEY = 'vs9QVR07SrNhynRdU4TaICOpNL0KL6Ah'
+SIGNING_KEY = config('SIGNING_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
 # Looking to send emails in production? Check out our Email API/SMTP product!
-EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
-EMAIL_HOST_USER = 'dc1e6c4a3b2aa9'
-EMAIL_HOST_PASSWORD = '4b05b23799cbaf'
-EMAIL_PORT = 2525
-DOMAIN = 'localhost:5173'
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
+DOMAIN = config('DOMAIN')
 # Application definition
 
 INSTALLED_APPS = [
@@ -84,11 +85,11 @@ WSGI_APPLICATION = 'fuzzy.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'fuzzy',
-        'USER': 'postgres',
-        'PASSWORD': 'Pro_gib',
-        'HOST': 'localhost',
-        'PORT': '5432'
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT', cast=int),
     }
 }
 
@@ -180,12 +181,12 @@ DJOSER = {
 
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = EMAIL_HOST
+EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_USE_TLS = True
-EMAIL_PORT = EMAIL_PORT
-EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
-EMAIL_HOST_USER = EMAIL_HOST_USER
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 DEFAULT_FROM_EMAIL = 'info@journal-bullet.com'
-DOMAIN = DOMAIN
+DOMAIN = config('DOMAIN')
 SITE_NAME = "Fuzzy"
 
