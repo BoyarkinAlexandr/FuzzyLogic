@@ -46,7 +46,7 @@ def calculate_membership_function(request):
                 b = params.get("b")
                 c = params.get("c")
                 d = params.get("d")
-                y = t_function(x, a, b, c, d)
+                #y = t_function(x, a, b, c, d)
             else:
                 return JsonResponse({"error": "Invalid function type"}, status=400)
 

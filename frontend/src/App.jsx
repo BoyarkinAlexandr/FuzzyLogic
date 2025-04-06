@@ -45,7 +45,7 @@ function App() {
             <Route path="/activate/:uid/:token" element={<ActivatePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="*" element={<NotFoundPage />} />
-            <Route path="/asection" element={<Asection />} />
+            <Route path="/asection" element={<Asection/>} />
             <Route path="/password/reset/confirm/:uid/:token" element={<ResetPasswordPageConfirm />} />
             <Route path="/quiz" element={<QuizList />} />
             <Route path="/quiz/:id" element={<QuizDetails />} />
