@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import annotationPlugin from 'chartjs-plugin-annotation';
 import { Line } from "react-chartjs-2";
+import { useSelector } from 'react-redux';
 import {
   TextField,
   Button,
@@ -113,7 +114,7 @@ const MembershipFunction = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showBLine, setShowBLine] = useState(true);
   const [showCLine, setShowCLine] = useState(true);
-
+  const userInfo = useSelector((state) => state.auth.userInfo);
   // Состояния для видео
   const [openVideoDialog, setOpenVideoDialog] = useState(false);
   const [openAddVideoDialog, setOpenAddVideoDialog] = useState(false);
@@ -365,7 +366,6 @@ const MembershipFunction = () => {
               video.url && typeof video.url === 'string' ? (
                 <Box key={video.id} sx={{ marginBottom: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="subtitle1">Видео {video.id}</Typography>
                     {isYouTubeUrl(video.url) ? (
                       <iframe
                         width="100%"
@@ -398,6 +398,7 @@ const MembershipFunction = () => {
                       </video>
                     )}
                   </Box>
+                  {userInfo?.is_staff && (
                   <Button
                     variant="outlined"
                     color="error"
@@ -405,16 +406,17 @@ const MembershipFunction = () => {
                     onClick={() => handleDeleteVideo(video.id)}
                   >
                     Удалить
-                  </Button>
+                  </Button>)}
                 </Box>
               ) : null
             ))
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleOpenAddVideoDialog} color="primary">
+          {userInfo?.is_staff && (
+          <Button onClick={() => setOpenAddVideoDialog(true)} color="primary">
             Добавить видео
-          </Button>
+          </Button>)}
           <Button onClick={handleCloseVideoDialog} color="primary">
             Закрыть
           </Button>

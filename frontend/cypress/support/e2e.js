@@ -15,6 +15,7 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+import setLightTheme from 'cypress-light-theme'
 
 Cypress.on('uncaught:exception', (err) => {
     if (err.message.includes('useMemo') || 
@@ -24,3 +25,4 @@ Cypress.on('uncaught:exception', (err) => {
     }
     return true;
   });
+setLightTheme()

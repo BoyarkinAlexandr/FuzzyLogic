@@ -12,7 +12,7 @@ const methods = [
   { id: 2, name: "Композиция", description: "Краткое описание метода 2. Этот метод используется для анализа данных.", imageUrl: "./images/matrixx.webp", link: "/compozition" },
   { id: 3, name: "Функции принадлежности", description: "Краткое описание метода 3. Этот метод позволяет решать задачи с многими переменными.", imageUrl: "./images/function.webp", link: "/member" },
   { id: 4, name: "α-сечениe", description: "Краткое описание метода 4. Этот метод полезен для работы с большими данными.", imageUrl: "./images/alfa.webp", link: "/asection" },
-  { id: 5, name: "Основные операции нечетких множеств", description: "Краткое описание метода 5. Этот метод помогает в задачах с искусственным интеллектом.", imageUrl: "./images/union.png", link: "/fuzzycalculator" },
+  { id: 5, name: "Основные операции нечетких множеств", description: "Краткое описание метода 5. Этот метод помогает в задачах с искусственным интеллектом.", imageUrl: "./images/image.png", link: "/fuzzycalculator" },
 ];
 
 const Home = ({ searchQuery }) => {

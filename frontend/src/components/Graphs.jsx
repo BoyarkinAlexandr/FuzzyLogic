@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { 
   TextField, 
   Button, 
@@ -33,7 +34,7 @@ const Graphs = () => {
   const [newVideoUrl, setNewVideoUrl] = useState('');
   const [openAddVideoDialog, setOpenAddVideoDialog] = useState(false);
   const topic = 'graphs'; // Тема для этой страницы
-
+  const userInfo = useSelector((state) => state.auth.userInfo);
   // Загрузка видео с сервера при монтировании компонента
   useEffect(() => {
     const fetchVideos = async () => {
@@ -299,22 +300,24 @@ const Graphs = () => {
                     </video>
                   )}
                 </Box>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  startIcon={<Delete />}
-                  onClick={() => handleDeleteVideo(video.id)}
-                >
-                  Удалить
-                </Button>
-              </Box>
+                {userInfo?.is_staff && (
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<Delete />}
+                    onClick={() => handleDeleteVideo(video.id)}
+                  >
+                    Удалить
+                  </Button>)}
+                </Box>
             ))
           )}
         </DialogContent>
         <DialogActions>
+          {userInfo?.is_staff && (
           <Button onClick={() => setOpenAddVideoDialog(true)} color="primary">
             Добавить видео
-          </Button>
+          </Button>)}
           <Button onClick={() => setOpenVideoDialog(false)} color="primary">
             Закрыть
           </Button>
